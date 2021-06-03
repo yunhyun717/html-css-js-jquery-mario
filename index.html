@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <title>Mario</title>
+    <style>
+        @font-face {
+            font-family: 'Early_GameBoy';
+            src: url('assets/fonts/Early_GameBoy.eot');
+            src: url('assets/fonts/Early_GameBoy.eot?#iefix') format('embedded-opentype'),
+                url('assets/fonts/Early_GameBoy.woff') format('woff'),
+                url('assets/fonts/Early_GameBoy.ttf') format('truetype'),
+                url('assets/fonts/Early_GameBoy.svg#Early_GameBoy') format('svg');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        body {
+            overflow-x: hidden;
+            overflow-y: hidden;
+            margin: 0px;
+            font-family: 'Early_GameBoy';
+            background: black;
+            color: white;
+        }
+
+        #container {
+            position: absolute;
+            width: 1063px;
+            height: 639px;
+            left: 709px;
+            top: 198px;
+        }
+
+        #howto {
+            position: absolute;
+            width: 1063px;
+            left: 709px;
+            text-align: center;
+            top: 950px;
+            font-size: 20pt;
+            z-index: 99;
+        }
+
+        #side1 {
+            position: absolute;
+            width: 1063px;
+            height: 650px;
+            left: 1063px;
+            top: 0px;
+            background: black;
+            z-index: -2;
+        }
+
+        #side2 {
+            position: absolute;
+            width: 709px;
+            height: 650px;
+            left: -709px;
+            top: 0px;
+            background: black;
+            z-index: -2;
+        }
+
+        #start {
+            position: absolute;
+            left: 301px;
+            top: 260px;
+            z-index: 10;
+            text-align: center
+        }
+
+        #ready {
+            position: absolute;
+            left: 425.505px;
+            top: 260px;
+            z-index: 10;
+        }
+
+        #mario {
+            position: absolute;
+            width: 50px;
+            top: 480px;
+            left: 100px;
+            z-index: -2;
+        }
+
+        #bowserbaby {
+            position: absolute;
+            width: 80px;
+            top: 468px;
+            left: 0px;
+            z-index: -2;
+        }
+
+        #coinfm {
+            position: absolute;
+            width: 40px;
+            top: 480px;
+            left: 100px;
+            z-index: -3;
+        }
+
+        #coinfm2 {
+            position: absolute;
+            width: 40px;
+            top: 480px;
+            left: 100px;
+            z-index: -3;
+        }
+
+        #baby {
+            position: absolute;
+            width: 104px;
+            top: 400px;
+            left: -100px;
+            z-index: -2;
+        }
+
+        #bowser {
+            position: absolute;
+            width: 100px;
+            top: 443px;
+            left: 1120px;
+            z-index: -2;
+        }
+
+        #bowserdead {
+            position: absolute;
+            width: 100px;
+            top: 443px;
+            left: 1120px;
+            z-index: -2;
+        }
+
+        #wall {
+            position: absolute;
+            width: 2126px;
+            height: 639px;
+            left: 357px;
+            top: 0px;
+            z-index: -4;
+            background-repeat: repeat;
+            animation: animatedBackground 5s linear infinite;
+        }
+
+        #score {
+            position: absolute;
+            right: 20px;
+            top: 10px;
+            font-size: 30pt;
+            z-index: 20;
+        }
+
+        #coin {
+            position: relative;
+            width: 40px;
+            top: 10px;
+        }
+
+        #record {
+            position: relative;
+            top: 230px;
+            font-size: 30pt;
+        }
+
+        #newhigh {
+            position: relative;
+            top: -120px;
+            font-size: 30pt;
+        }
+
+        #gameover {
+            background: black;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+            z-index: 40;
+        }
+
+        #gameoverimg {
+            position: relative;
+            top: 200px;
+        }
+
+        #pad {
+            margin-left: 350px;
+        }
+
+        #gamepad {
+            position: absolute;
+            width: 1800px;
+            z-index: 101;
+            top: 1700px;
+        }
+
+        #blackscreen {
+            position: absolute;
+            width: 1063px;
+            height: 1000px;
+            left: 709px;
+            top: 198px;
+            z-index: 100;
+            background: black;
+        }
+
+        @keyframes animatedBackground {
+            from {
+                left: 0%;
+            }
+
+            to {
+                left: -100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        // 레디 이미지 블링크
+        function blink(tmp) {
+            tmp.show().animate({ opacity: '0' })
+                .animate({ opacity: '1' })
+                .animate({ opacity: '0' })
+                .animate({ opacity: '1' })
+                .animate({ opacity: '0' }, function () {
+                    cnt = 0;
+                });
+
+        }
+
+        // 스타트 클릭
+        let scorecheck = false;
+        let scorecheck_2 = false;
+        let currentscore = 0;
+        let record = 0;
+
+        function start() {
+            let start = $("#start");
+            let ready = $("#ready");
+            let mario = $("#mario");
+            let baby = $("#baby");
+            let bowser = $("#bowser");
+            let score = $("#score");
+            let newhigh = $("#newhigh");
+            let babybs = $("#bowserbaby");
+            scorecheck = false;
+            scorecheck_2 = false;
+            isDead = false;
+            currentscore = 0;
+            newhigh.hide();
+            score.show();
+            score.html("<img id='coin' src='assets/coin.gif' alt=''> X " + currentscore);
+            bowser.hide();
+            mario.hide();
+            mario.animate({ left: "-=200px" }, 0)
+            mario.show();
+            baby.show();
+            start.hide();
+            blink(ready);
+            score.show();
+            mario.animate({ left: "+=200px" }, 1000)
+            babybs.stop().animate({ left: "+=1200px" }, 500)
+            setTimeout(() => {
+                babybs.stop();
+            }, 500);
+            setTimeout(() => {
+                setInterval(() => bowserf(), (Math.random() * 1000 + 1000));
+            }, 2000);
+
+        }
+
+        // 게임 스타트
+        $(function () {
+            $("#gamepad").animate({
+                top: "-=1650"
+            }, 1500).animate({
+                top: "+=50"
+            }, 800, function () {
+                $("#blackscreen").fadeOut(1500, function () {
+                    $("#gamepad").attr("style", "z-index: 9")
+                        .animate({
+                            top: "-=1600"
+                        }, 0);
+                });
+            });
+
+            $("#start").animate({ top: "+=20px" }, 500)
+            setTimeout(() => {
+                setInterval(() => {
+                    $("#start").animate({ top: "-=40px" }, 800)
+                        .animate({ top: "+=40px" }, 800)
+                }, 1600);
+            }, 500);
+            setInterval(() => {
+                $("#bowserbaby").animate({ left: "+=" + (200 + (Math.random() * 100)) + "px" }, 1000)
+                    .animate({ left: "-=200px" }, 1500)
+            }, 2500);
+
+
+            $("#start").click(function () {
+                start();
+            });
+            $(".starthide").hide();
+        });
+
+
+        // 점프
+        function jump() {
+            let mario = $("#mario");
+            mario.attr("src", "assets/jump.gif")
+                .animate({ top: "-=200px" }, 1000)
+                .animate({ top: "+=200px" }, 900, function () {
+                    mario.attr("src", "assets/mario.gif")
+                })
+            setTimeout(() => {
+                isJumping = false;
+            }, 2000);
+        };
+
+        // 슈팅
+        function shoot() {
+            let baby = $("#baby");
+            baby.animate({ left: "+=250px" }, 500)
+                .animate({ left: "-=70px" }, 700)
+                .animate({ left: "+=1000px", top: "+=80px" }, 3000)
+                .hide().animate({ left: "-=1180px", top: "-=80px" }, 0).show();
+            setTimeout(() => {
+                isShooting = false;
+            }, 2000);
+        };
+
+        // 이중 입력 방지
+        let isJumping = false;
+        let isShooting = false;
+        $(document).keydown(function (event) {
+            let key = event.keyCode;
+            console.log(key);
+            switch (key) {
+                case 32:
+                    if (isJumping == false) {
+                        isJumping = true;
+                        jump();
+                    }
+                    break;
+                case 17:
+                    if (isShooting == false) {
+                        isShooting = true;
+                        shoot();
+                    }
+            }
+        });
+
+        // 쿠파
+        function bowserf() {
+            scorecheck = true;
+            scorecheck_2 = true;
+            let bowser = $("#bowser");
+            let bowserdd = $("#bowser");
+            let rannum = (Math.random() * 1000 + 6000);
+            bowser.show();
+            bowser.animate({ left: "-=1300px" }, rannum)
+                .hide(0, function () {
+                    bowser.offset({ left: 1300 })
+                }).show(0)
+            bowserdd.animate({ left: "-=1300px" }, rannum)
+                .hide(0, function () {
+                    bowser.offset({ left: 1300 })
+                }).show(0)
+        };
+
+        let bowsershoot = false;
+
+        // 쿠파의 죽음
+        function bowserCheck() {
+            let mario = $("#mario");
+            let baby = $("#baby");
+            let bowser = $("#bowser");
+            let bowserdd = $("#bowserdead");
+            let coinfm = $("#coinfm");
+            let coinfm2 = $("#coinfm2");
+
+            let marioRightX = 130;
+            let marioLeftX = 100;
+            let marioBottomY = parseInt(
+                mario.css("top").replace("px", "")
+            ) + 50;
+
+            let babyLeftX = parseInt(
+                baby.css("left").replace("px", "")
+            );
+            let babyRightX = babyLeftX + 104;
+            let babyBottomY = parseInt(
+                baby.css("top").replace("px", "")
+            ) + 74;
+
+            let enemyLeftX = parseInt(
+                bowser.css("left").replace("px", "")
+            );
+            let enemyRightX = enemyLeftX + 90;
+            let enemyTopY = 460;
+
+            if (
+                babyRightX > enemyLeftX
+                && babyLeftX < enemyRightX
+                && babyBottomY > enemyTopY
+                && scorecheck_2 == true
+                && babyRightX > 150
+                && babyLeftX < 1063
+            ) {
+                bowsershoot = true;
+                scorecheck = false;
+                scorecheck_2 = false;
+                currentscore += 2;
+                baby.stop(true, true).attr("style", "transform:rotate(0deg)");
+                coinfm.animate({ top: "-=" + (530 - marioBottomY) + "px" }, 0)
+                    .show().animate({ top: "-=100px" }, 150)
+                    .animate({ top: "+=30px" }, 150)
+                    .fadeOut(30).animate({ top: "+=" + (600 - marioBottomY) + "px" }, 0);
+
+                setTimeout(() => {
+                    coinfm2.animate({ top: "-=" + (530 - marioBottomY) + "px" }, 0)
+                        .show().animate({ top: "-=100px" }, 150)
+                        .animate({ top: "+=30px" }, 150)
+                        .fadeOut(30).animate({ top: "+=" + (600 - marioBottomY) + "px" }, 0);
+                }, 150);;
+                bowserdd.animate({ left: "-=" + (1120 - enemyLeftX) + "px" }, 0)
+                    .attr("style", "transform:rotate(45deg)")
+                    .animate({ top: "-=30px" }, 50)
+                    .animate({ top: "+=130px" }, 200)
+                    .animate({ left: "+=" + (1120 - enemyLeftX) + "px" }, 0)
+                    .attr("style", "transform:rotate(-45deg)")
+                    .animate({ top: "-=100px" }, 0)
+                    ;
+                bowser.stop(true, true).attr("style", "transform:rotate(0deg)");
+                record = Math.max(record, currentscore);
+                $("#score").html("<img id='coin' src='assets/coin.gif' alt=''> X " + currentscore);
+                $("#record").html("HIGH RECORD : <img id='coin' src='assets/coin.gif' alt=''> X " + record);
+            }
+            return bowsershoot;
+        }
+
+        // 게임오버 확인, 점수
+        let isDead = false;
+        let cnt = 0;
+
+        function deadCheck() {
+            let mario = $("#mario");
+            let bowser = $("#bowser");
+            let coinfm = $("#coinfm");
+
+            let marioRightX = 130;
+            let marioLeftX = 100;
+            let marioBottomY = parseInt(
+                mario.css("top").replace("px", "")
+            ) + 50;
+
+            let enemyLeftX = parseInt(
+                bowser.css("left").replace("px", "")
+            );
+            let enemyRightX = enemyLeftX + 90;
+            let enemyTopY = 460;
+
+            if (marioRightX > enemyLeftX && marioLeftX < enemyRightX && marioBottomY > enemyTopY) {
+                isDead = true;
+                cnt += 1;
+                mario.attr("src", "assets/dead.png").attr("style", "transform:rotate(-30deg)");
+                setTimeout(() => {
+                    mario.attr("src", "assets/mario.gif").attr("style", "transform:rotate(0deg)");
+
+                }, 1000);
+            } else if (enemyRightX < 100 && enemyRightX > 90 && scorecheck == true && isDead == false) {
+                scorecheck = false;
+                currentscore += 1;
+                record = Math.max(record, currentscore);
+                coinfm.animate({ top: "-=" + (530 - marioBottomY) + "px" }, 0)
+                    .show().animate({ top: "-=100px" }, 150)
+                    .animate({ top: "+=30px" }, 150)
+                    .fadeOut(30).animate({ top: "+=" + (600 - marioBottomY) + "px" }, 0);
+                $("#score").html("<img id='coin' src='assets/coin.gif' alt=''> X " + currentscore);
+                $("#record").html("HIGH RECORD : <img id='coin' src='assets/coin.gif' alt=''> X " + record);
+            }
+            return isDead;
+        }
+
+        // 게임종료
+        let gmoverCheck = false;
+        function gameOver() {
+            gmoverCheck = false;
+            if (deadCheck()) {
+                gmoverCheck = true;
+            }
+            return gmoverCheck;
+        };
+
+        setInterval(() => {
+            let newhigh = $("#newhigh");
+            $(function () {
+                if (deadCheck() && cnt == 2) {
+                    let go = $("#gameover");
+                    let score = $("#score");
+                    score.hide();
+                    if (record == currentscore) {
+                        blink(newhigh);
+                    }
+                    go.slideDown();
+                    isDead = false;
+                    setTimeout(() => go.slideUp(), 3000);
+                    $("#record").show();
+                    currentscore = 0;
+                    setTimeout(() => start(), 3100);;
+                };
+            });
+        }, 1);
+
+        setInterval(() => {
+            $(function () {
+                if (bowserCheck()) {
+                };
+            });
+        }, 1);
+
+    </script>
+    <div id="container">
+        <div class="starthide" id="score"><img id='coin' src='assets/coin.gif' alt=''> X 0</div>
+        <div id="start">
+            <img src="assets/start.png" alt="">
+            <div id="clickhere"><br>click to start</div>
+        </div>
+        <img class="starthide" id="ready" src="assets/ready.png" alt="">
+        <img class="starthide" id="mario" src="assets/mario.gif" alt="">
+        <img class="starthide" id="coinfm" src="assets/coin.gif" alt="">
+        <img class="starthide" id="coinfm2" src="assets/coin.gif" alt="">
+        <img id="bowser" src="assets/bowser.gif" alt="">
+        <img id="bowserbaby" src="assets/bowserbaby.gif" alt="">
+        <img class="starthide" id="bowserdead" src="assets/bowserdead.png" alt="">
+        <img class="starthide" id="baby" src="assets/baby.gif" alt="">
+        <img id="wall" src="assets/wall.jpg" alt="">
+        <div id="side1"></div>
+        <div id="side2"></div>
+        <div class="starthide" id="gameover">
+            <img id="gameoverimg" src="assets/gameover.gif" alt="">
+            <div id="record">HIGH RECORD : <img id='coin' src='assets/coin.gif' alt=''> X 0</div>
+            <div class="starthide" id="newhigh">NEW RECORD!!!</div>
+        </div>
+    </div>
+    <div id="pad">
+        <img id="gamepad" src="assets/gamepad.png" alt="">
+        <div id="blackscreen"></div>
+    </div>
+    <div id="howto">Space = Jump / Ctrl = shoot</div>
+</body>
+
+</html>
